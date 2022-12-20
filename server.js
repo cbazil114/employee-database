@@ -1,6 +1,8 @@
 require("console.table");
 const inquirer = require('inquirer');
+const { connection } = require("./db");
 const queries = require("./db");
+const { connect } = require("./db/connections");
 
 questions();
 
@@ -33,7 +35,7 @@ function questions() {
                 addRoles();
                 break;
             case "Quit":
-                quit();
+                connection.end();
                 break;
         }
     })
@@ -41,21 +43,21 @@ function questions() {
 
 function viewDepartments() {
     queries.findAllDepartments().then(([response]) => {
-        console.log(response)
+        console.table(response)
     }).then(() => questions())
 
 }
 
 function viewEmployees() {
     queries.findAllEmployees().then(([response]) => {
-        console.log(response)
+        console.table(response)
     }).then(() => questions())
 
 }
 
 function viewRoles() {
     queries.findAllRoles().then(([response]) => {
-        console.log(response)
+        console.table(response)
     }).then(() => questions())
 
 
@@ -65,8 +67,15 @@ const addDepartments = () => {
     inquirer.prompt({
         type: "input",
         name: "addedDepartments",
-        message: "What is the name of the new department?"
-    })
+        message: "What is the name of the new department?",
+        validate: (input => {
+            if (!input) {
+                return "Please enter a department name."
+            } else {
+                return true;
+            }
+        })
+    }).then
 }
 
 const addRoles = () => {
@@ -78,11 +87,17 @@ const addRoles = () => {
 }
 
 const addEmployees = () => {
-    inquirer.prompt({
+    inquirer.prompt([{
         type: "input",
         name: "addedFirstName",
         message: "What is the first name of the new emnployee?"
-    })
+    },
+    {
+        type: "input",
+        name: "addedLastName",
+        message: "What is the last name of the new emnployee?"
+    },
+])
 }
 
 function quit() {
