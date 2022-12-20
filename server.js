@@ -61,6 +61,30 @@ function viewRoles() {
 
 }
 
+const addDepartments = () => {
+    inquirer.prompt({
+        type: "input",
+        name: "addedDepartments",
+        message: "What is the name of the new department?"
+    })
+}
+
+const addRoles = () => {
+    inquirer.prompt({
+        type: "input",
+        name: "addedRoles",
+        message: "What is the name of the new role?"
+    })
+}
+
+const addEmployees = () => {
+    inquirer.prompt({
+        type: "input",
+        name: "addedFirstName",
+        message: "What is the first name of the new emnployee?"
+    })
+}
+
 function quit() {
 
 }
