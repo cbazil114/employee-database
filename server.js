@@ -12,7 +12,7 @@ function questions() {
             type: "list",
             name: "choice",
             message: "What would you like to do?",
-            choices: ["View Employees", "View Departments", "View Roles", "Add Employees", "Add Departments", "Add Roles", "Quit"]
+            choices: ["View Employees", "View Departments", "View Roles", "Add Employees", "Add Departments", "Add Roles", "Update Employees", "Quit"]
         }
     ]).then(response => {
         switch (response.choice) {
@@ -76,15 +76,24 @@ const addDepartments = () => {
                 return true;
             }
         })
-    }).then
+    }).then((response)=>{
+        connection.query(`INSERT INTO departments (name) VALUES("${response.addedDepartments}")`)
+    }).then(() => questions())
+
 }
 
 const addRoles = () => {
-    inquirer.prompt({
+    inquirer.prompt([{
         type: "input",
         name: "addedRoles",
-        message: "What is the name of the new role?"
-    })
+        message: "What is the title of the new role?"
+    },
+    {
+        type: "input",
+        name: "addedSalaries",
+        message: "What is the role's new salary?" 
+    }
+])
 }
 
 const addEmployees = () => {
@@ -98,13 +107,32 @@ const addEmployees = () => {
         name: "addedLastName",
         message: "What is the last name of the new emnployee?"
     },
+    {
+        type: "input",
+        name: "addedEmpRole",
+        message: "What is the last name of the new emnployee?"
+    },
+    {
+        type: "input",
+        name: "addedEmpMng",
+        message: ""
+    },
     ])
 }
 
 const updateEmployees = () => {
-    inquirer.prompt({
+    inquirer.prompt([{
         type: "input",
         name: "updateEmpId",
         message: "What is the employee ID you would like to update?"
-    })
+        
+    },
+    {
+        type: "list",
+        name: "updateEmpRole",
+        message: "What is the new role for the employee?",
+        choices: [{name: "roles.title", value: "roles.id"}]
+    
+    },
+])
 }
