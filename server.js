@@ -98,7 +98,7 @@ const addRoles = () => {
     {
         type: "input",
         name: "addedSalaries",
-        message: "What is the role's new salary?" 
+        message: "What is the role's new salary?" ,
         validate: (input => {
             if (!input) {
                 return "Please enter a salary."
@@ -106,9 +106,21 @@ const addRoles = () => {
                 return true;
             }
         })
+    },
+    {
+        type: "input",
+        name: "addedDeptId",
+        message: "What is the role's new department ID?" ,
+        validate: (input => {
+            if (!input) {
+                return "Please enter a department ID."
+            } else {
+                return true;
+            }
+        })
     }
 ]).then((response)=>{
-    connection.query(`INSERT INTO roles (title, salary) VALUES("${response.addedRoles}", "${response.addedSalaries})`)
+    connection.query(`INSERT INTO roles (title, salary, department_id) VALUES("${response.addedRoles}", ${response.addedSalaries}, ${response.addedDeptId})`)
 }).then(() => questions())
 }
 
