@@ -138,14 +138,23 @@ const addEmployees = () => {
     {
         type: "input",
         name: "addedEmpRole",
-        message: "What is the last name of the new emnployee?"
+        message: "What is the last name of the new employee?"
     },
     {
-        type: "input",
-        name: "addedEmpMng",
-        message: ""
+        type: "list",
+        name: "empRole",
+        message: "What is the employee's role?",
+        choices: []
     },
-    ])
+    {
+        type: "list",
+        name: "empManager",
+        message: "Who is the employee's manager?",
+        choices: []
+    }
+    ]).then((response)=>{
+        connection.query(`INSERT INTO employees (first_name, last_name, role_id) VALUES("${response.addedFirstName}", "${response.addedEmpRole}", ${response.addedDeptId})`)
+    }).then(() => questions())
 }
 
 const updateEmployees = () => {
@@ -153,7 +162,6 @@ const updateEmployees = () => {
         type: "input",
         name: "updateEmpId",
         message: "What is the employee ID you would like to update?"
-        
     },
     {
         type: "list",
