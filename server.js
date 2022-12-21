@@ -86,14 +86,30 @@ const addRoles = () => {
     inquirer.prompt([{
         type: "input",
         name: "addedRoles",
-        message: "What is the title of the new role?"
+        message: "What is the title of the new role?",
+        validate: (input => {
+            if (!input) {
+                return "Please enter a role name."
+            } else {
+                return true;
+            }
+        })
     },
     {
         type: "input",
         name: "addedSalaries",
         message: "What is the role's new salary?" 
+        validate: (input => {
+            if (!input) {
+                return "Please enter a salary."
+            } else {
+                return true;
+            }
+        })
     }
-])
+]).then((response)=>{
+    connection.query(`INSERT INTO roles (title, salary) VALUES("${response.addedRoles}", "${response.addedSalaries})`)
+}).then(() => questions())
 }
 
 const addEmployees = () => {
