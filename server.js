@@ -200,5 +200,7 @@ const updateEmployees = () => {
         choices: [{ name: "roles.title", value: "roles.id" }]
 
     },
-    ])
+    ]).then((response) => {
+        connection.query(`UPDATE employees (title, salary, department_id) VALUES("${response.addedRoles}", ${response.addedSalaries}, ${response.addedDeptId})`)
+    }).then(() => questions())
 }
