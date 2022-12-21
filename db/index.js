@@ -11,7 +11,7 @@ class Queries {
     }
     findAllRoles() {
         return this.connection.promise().query(
-            "SELECT roles.title, roles.salary, departments.name FROM roles LEFT JOIN departments ON roles.department_id = departments.id;"
+            "SELECT roles.title, roles.salary, roles.id, departments.name FROM roles LEFT JOIN departments ON roles.department_id = departments.id;"
         )
     }
     findAllEmployees() {
