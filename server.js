@@ -34,6 +34,9 @@ function questions() {
             case "Add Roles":
                 addRoles();
                 break;
+            case "Update Employees":
+                updateEmployees();
+                break;
             case "Quit":
                 connection.end();
                 break;
@@ -59,8 +62,6 @@ function viewRoles() {
     queries.findAllRoles().then(([response]) => {
         console.table(response)
     }).then(() => questions())
-
-
 }
 
 const addDepartments = () => {
@@ -97,9 +98,13 @@ const addEmployees = () => {
         name: "addedLastName",
         message: "What is the last name of the new emnployee?"
     },
-])
+    ])
 }
 
-function quit() {
-
+const updateEmployees = () => {
+    inquirer.prompt({
+        type: "input",
+        name: "updateEmpId",
+        message: "What is the employee ID you would like to update?"
+    })
 }
