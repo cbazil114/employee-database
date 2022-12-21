@@ -136,6 +136,7 @@ const addEmployees = () => {
         message: "What is the last name of the new emnployee?"
     }
     ]).then(res => {
+        console.log(res);
         let firstName = res.addedFirstName;
         let lastName = res.addedLastName
         queries.findAllRoles()
@@ -152,6 +153,7 @@ const addEmployees = () => {
                     message: "What is the employee's role?",
                     choices: roleChoices
                 }).then(res => {
+                    console.log(res)
                     let roleId = res.roleId;
                     queries.findAllEmployees()
                         .then(([rows]) => {
@@ -167,14 +169,23 @@ const addEmployees = () => {
                                 message: "Who is the employee's manager?",
                                 choices: managerChoices,
             
-                            })
+                            }) .then(res => {
+                                let employee = {
+                                  manager_id: res.managerId,
+                                  role_id: roleId,
+                                  first_name: firstName,
+                                  last_name: lastName
+                                }
+          
+                                connection.query(`INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES("${employee.first_name}", "${employee.last_name}", ${employee.role_id}, ${employee.manager_id})`)
+                              }).then(() => {
+                                console.log(`Added ${firstName} ${lastName} to the database`);
+                               
+                            }).then(() => questions())
                         })
                     })
             })
-    }).then((response) => {
-        connection.query(`INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES("${response.firstName}", "${response.lastName}", "${response.roleId}", "${response.managerId}")`)
-    }).then(() => questions())
-}
+    })}
 
 const updateEmployees = () => {
     inquirer.prompt([{
