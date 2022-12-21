@@ -76,7 +76,7 @@ const addDepartments = () => {
                 return true;
             }
         })
-    }).then((response)=>{
+    }).then((response) => {
         connection.query(`INSERT INTO departments (name) VALUES("${response.addedDepartments}")`)
     }).then(() => questions())
 
@@ -98,7 +98,7 @@ const addRoles = () => {
     {
         type: "input",
         name: "addedSalaries",
-        message: "What is the role's new salary?" ,
+        message: "What is the role's new salary?",
         validate: (input => {
             if (!input) {
                 return "Please enter a salary."
@@ -110,7 +110,7 @@ const addRoles = () => {
     {
         type: "input",
         name: "addedDeptId",
-        message: "What is the role's new department ID?" ,
+        message: "What is the role's new department ID?",
         validate: (input => {
             if (!input) {
                 return "Please enter a department ID."
@@ -119,9 +119,9 @@ const addRoles = () => {
             }
         })
     }
-]).then((response)=>{
-    connection.query(`INSERT INTO roles (title, salary, department_id) VALUES("${response.addedRoles}", ${response.addedSalaries}, ${response.addedDeptId})`)
-}).then(() => questions())
+    ]).then((response) => {
+        connection.query(`INSERT INTO roles (title, salary, department_id) VALUES("${response.addedRoles}", ${response.addedSalaries}, ${response.addedDeptId})`)
+    }).then(() => questions())
 }
 
 const addEmployees = () => {
@@ -134,26 +134,45 @@ const addEmployees = () => {
         type: "input",
         name: "addedLastName",
         message: "What is the last name of the new emnployee?"
-    },
-    {
-        type: "input",
-        name: "addedEmpRole",
-        message: "What is the last name of the new employee?"
-    },
-    {
-        type: "list",
-        name: "empRole",
-        message: "What is the employee's role?",
-        choices: []
-    },
-    {
-        type: "list",
-        name: "empManager",
-        message: "Who is the employee's manager?",
-        choices: []
     }
-    ]).then((response)=>{
-        connection.query(`INSERT INTO employees (first_name, last_name, role_id) VALUES("${response.addedFirstName}", "${response.addedEmpRole}", ${response.addedDeptId})`)
+    ]).then(res => {
+        let firstName = res.addedFirstName;
+        let lastName = res.addedLastName
+        queries.findAllRoles()
+            .then(([rows]) => {
+                let roles = rows;
+                const roleChoices = roles.map(({ id, title }) => ({
+                    name: title,
+                    value: id
+                }));
+
+                inquirer.prompt({
+                    type: "list",
+                    name: "roleId",
+                    message: "What is the employee's role?",
+                    choices: roleChoices
+                }).then(res => {
+                    let roleId = res.roleId;
+                    queries.findAllEmployees()
+                        .then(([rows]) => {
+                            let employees = rows;
+                            const managerChoices = employees.map(({ id, first_name, last_name }) => ({
+                                name: `${first_name} ${last_name}`,
+                                value: id,
+                            }));
+                            managerChoices.unshift({ name: "None", value: null})
+                            inquirer.prompt({
+                                type: "list",
+                                name: "managerId",
+                                message: "Who is the employee's manager?",
+                                choices: managerChoices,
+            
+                            })
+                        })
+                    })
+            })
+    }).then((response) => {
+        connection.query(`INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES("${response.firstName}", "${response.lastName}", "${response.roleId}", "${response.managerId}")`)
     }).then(() => questions())
 }
 
@@ -167,8 +186,8 @@ const updateEmployees = () => {
         type: "list",
         name: "updateEmpRole",
         message: "What is the new role for the employee?",
-        choices: [{name: "roles.title", value: "roles.id"}]
-    
+        choices: [{ name: "roles.title", value: "roles.id" }]
+
     },
-])
+    ])
 }
