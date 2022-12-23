@@ -162,45 +162,65 @@ const addEmployees = () => {
                                 name: `${first_name} ${last_name}`,
                                 value: id,
                             }));
-                            managerChoices.unshift({ name: "None", value: null})
+                            managerChoices.unshift({ name: "None", value: null })
                             inquirer.prompt({
                                 type: "list",
                                 name: "managerId",
                                 message: "Who is the employee's manager?",
                                 choices: managerChoices,
-            
-                            }) .then(res => {
+
+                            }).then(res => {
                                 let employee = {
-                                  manager_id: res.managerId,
-                                  role_id: roleId,
-                                  first_name: firstName,
-                                  last_name: lastName
+                                    manager_id: res.managerId,
+                                    role_id: roleId,
+                                    first_name: firstName,
+                                    last_name: lastName
                                 }
-          
+
                                 connection.query(`INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES("${employee.first_name}", "${employee.last_name}", ${employee.role_id}, ${employee.manager_id})`)
-                              }).then(() => {
+                            }).then(() => {
                                 console.log(`Added ${firstName} ${lastName} to the database`);
-                               
+
                             }).then(() => questions())
                         })
-                    })
+                })
             })
-    })}
+    })
+}
 
 const updateEmployees = () => {
-    inquirer.prompt([{
-        type: "input",
-        name: "updateEmpId",
-        message: "What is the employee ID you would like to update?"
-    },
-    {
-        type: "list",
-        name: "updateEmpRole",
-        message: "What is the new role for the employee?",
-        choices: [{ name: "roles.title", value: "roles.id" }]
+    connection.query("SELECT * FROM employees", (err, rows) => {
+        if (err) console.log(err)
+        const employees = rows.map(({ id, first_name, last_name }) => (
+            { value: id, name: `${first_name} ${last_name}` }
+        ))
+        connection.query("SELECT * FROM roles", (err, rows) => {
+            if (err) console.log(err)
+            const roles = rows.map(({ id, title }) => (
+                { value: id, name: title }
+            ))
+            inquirer.prompt([{
+                type: "list",
+                name: "updateEmpId",
+                message: "Which employee you would like to update?",
+                choices: employees
+            },
+            {
+                type: "list",
+                name: "updateEmpRole",
+                message: "What is the new role for the employee?",
+                choices: roles
 
-    },
-    ]).then((response) => {
-        connection.query(`UPDATE employees (title, salary, department_id) VALUES("${response.addedRoles}", ${response.addedSalaries}, ${response.addedDeptId})`)
-    }).then(() => questions())
+            },
+            ]).then((response) => {
+                connection.query(`UPDATE employees SET role_id = ? WHERE id = ?`, [response.updateEmpRole, response.updateEmpId], (err, rows) => {
+                    console.log("Employee role updated")
+                    questions()
+                })
+            })
+        })
+    })
+
 }
+
+
